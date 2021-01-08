@@ -1,0 +1,55 @@
+<script src="https://unpkg.com/vue@next"></script>
+
+<style>
+    .stack {}
+    .mt-4 {
+        margin: 10px;
+    }
+</style>
+
+<div id="app"></div>
+
+<script>
+    const {h, createApp} = window.Vue
+
+    // 子组件
+    const Stack = {
+        props: {
+            size: String
+        },
+
+        render() {
+            const slot = this.$slots.default
+                ? this.$slots.default()
+                : []
+
+            return h('div', {class: 'stack'}, slot.map(child => {
+                return h('div', {class: `mt-${this.$props.size}`}, [
+                    child
+                ])
+            }))
+        }
+    }
+
+    // 根组件
+    const App = {
+        components: {
+            Stack
+        },
+        template: `
+          <Stack size="4">
+              <div>hello</div>
+              <Stack size="4">
+                <div>hello</div>
+                <div>hello</div>
+              </Stack>
+              <Stack size="4">
+                <div>hello</div>
+                <div>hello</div>
+              </Stack>
+          </Stack>
+        `
+    }
+
+    createApp(App).mount('#app')
+</script>
