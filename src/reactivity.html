@@ -1,0 +1,41 @@
+<script>
+    let activeEffect
+
+    class Dep {
+
+        // 观察者模式
+        subscribers = new Set()
+
+        depend() {
+            // 依赖收集
+            if (activeEffect) {
+                this.subscribers.add(activeEffect)
+            }
+        }
+
+        notify() {
+            // 依赖响应
+            this.subscribers.forEach(effect => {
+                effect()
+            })
+        }
+
+    }
+
+    function watchEffect(effect) {
+        activeEffect = effect
+        effect() // sync function as below
+        activeEffect = null
+    }
+
+    const dep = new Dep()
+
+    // exists in vue components
+    watchEffect(() => {
+        dep.depend() // add effect() to list
+        console.log('effect() run');
+    }) // effect() run automatically
+
+    dep.notify() // notify to run effect() manually
+
+</script>
