@@ -1,0 +1,52 @@
+<script>
+    import {reactive, ref, computed, watchEffect, watch, onMounted} from 'vue'
+
+    export default {
+
+        props: ['id'],
+
+        // Options API:
+        // created() {
+        //     this.fetchData(this.id)
+        // },
+        // methods: {
+        //     fetchData(id) {
+        //
+        //     }
+        // },
+
+        setUp(props) {
+            const state = reactive({count: 0})
+
+            const fetchData = ref(null)
+            watchEffect(() => {
+                fetch(`url${props.id}`).then(res => res.json()).then(data => {
+                    fetchData.value = data
+                })
+            })// whenever props is changed, given it is a reactive object,
+            // the effect function would be called again
+
+            watchEffect(() => console.log(state.count))
+
+            watch(() => state.count, (count, oldCount) => {
+            })
+
+            const count = ref(0)
+            watch(count, (count, oldCount) => {
+            })
+
+            const plusOne = computed((() => state.count + 1))
+            watch(plusOne, (count, newCount) => {
+            })
+
+            onMounted(() => console.log('mounted!'))
+
+            return {
+                state,
+                increment: () => {
+                    state.count++
+                }
+            }
+        }
+    }
+</script>
