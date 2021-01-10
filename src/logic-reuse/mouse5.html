@@ -1,0 +1,42 @@
+<script src="https://unpkg.com/vue@next"></script>
+
+<div id="app"></div>
+
+<script>
+    // Composition API
+    const {createApp, ref, onMounted, onUnmounted} = window['Vue']
+
+    function useMouse() {
+        const x = ref(0)
+        const y = ref(0)
+
+        const update = e => {
+            x.value = e.pageX
+            y.value = e.pageY
+        }
+
+        onMounted(() => {
+            window.addEventListener('mousemove', update)
+        })
+
+        onUnmounted(() => {
+            window.removeEventListener('mousemove', update)
+        })
+
+        return {x, y}
+    }
+
+    const App = {
+        setUp() {
+            const {x, y} = useMouse()
+            return {
+                x,
+                y
+            }
+        },
+        template: `{{ x }} {{ y }}`
+    }
+
+    createApp(App).mount('#app')
+</script>
+
