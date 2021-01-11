@@ -1,0 +1,59 @@
+<script src="https://unpkg.com/vue@next"></script>
+
+<div id="app">
+    <div v-if="isPending">Loading...</div>
+    <div v-else-if="data">{{ data }}</div>
+    <div v-else-if="error">Something went wrong: {{ error.message }}</div>
+</div>
+
+<script>
+    const {createApp, ref} = Vue
+
+    function useFetch(url) {
+        const data = ref(null)
+        const error = ref(null)
+        const isPending = ref(true)
+
+        fetch(url)
+            .then(res => res.json())
+            .then(_data => {
+                // foo()
+                setTimeout(() => {
+                    data.value = _value
+                    isPending.value = false
+                }, 1000)
+            })
+            .catch(err => {
+                error.value = err
+                isPending.value = false
+            })
+
+        return {
+            data,
+            error,
+            isPending
+        }
+    }
+
+    const App = {
+        setUp() {
+            const {data, error, isPending} = useFetch('https://jsonplaceholder.typicode.com/todos/1')
+
+            return {
+                data,
+                error,
+                isPending
+            }
+        },
+        data() {
+            return {
+                data: ref(null),
+                error: ref(null),
+                isPending: ref(true)
+            }
+        },
+    }
+
+    createApp(App).mount('#app')
+
+</script>

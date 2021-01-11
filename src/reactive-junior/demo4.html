@@ -1,0 +1,64 @@
+<script>
+    const targetMap = new WeakMap()
+
+    let activeEffect = null
+
+    function watchEffect(eff) {
+        activeEffect = eff
+        activeEffect()
+        activeEffect = null
+    }
+
+    function getDep(targetMap, target, key) {
+        let depsMap = targetMap.get(target)
+        if (!depsMap) {
+            targetMap.set(target, (depsMap = new Map()))
+        }
+        let dep = depsMap.get(key)
+        if (!dep) {
+            depsMap.set(key, (dep = new Set()))
+        }
+        return dep
+    }
+
+    function track(target, key) {
+        if (activeEffect) {
+            const dep = getDep(targetMap, target, key)
+            dep.add(activeEffect)
+        }
+    }
+
+    function trigger(target, key) {
+        const dep = getDep(targetMap, target, key)
+        dep.forEach(effect => effect())
+    }
+
+    function reactive(target) {
+        const handler = {
+            get(target, key, receiver) {
+                const result = Reflect.get(...arguments)
+                track(target, key)
+                return result
+            },
+            set(target, key, value, receiver) {
+                const oldValue = target[key]
+                const result = Reflect.set(...arguments)
+                if (result && oldValue !== value) {
+                    trigger(target, key)
+                }
+                return result
+            }
+        }
+        return new Proxy(target, handler)
+    }
+
+    let product = reactive({price: 5, quantity: 2})
+    let total = 0
+    watchEffect(() => total = product.price * product.quantity)
+    console.log(total)
+
+    product.quantity = 3
+
+    console.log(total)
+
+</script>
