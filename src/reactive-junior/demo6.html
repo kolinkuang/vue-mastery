@@ -1,4 +1,5 @@
 <script>
+    // Computed Property
     const targetMap = new WeakMap()
 
     let activeEffect = null
@@ -40,8 +41,10 @@
                 return raw
             },
             set value(newVal) {
-                raw = newVal
-                trigger(r, 'value')
+                if (r.value !== newVal) {
+                    raw = newVal
+                    trigger(r, 'value')
+                }
             }
         }
         return r
@@ -66,17 +69,37 @@
         return new Proxy(target, handler)
     }
 
+    function computed(getter) {
+        const result = ref()
+        watchEffect(() => result.value = getter())
+        return result
+    }
+
     // demo
     let product = reactive({price: 5, quantity: 2})
-    let salePrice = ref(0)
-    let total = 0
-    watchEffect(() => salePrice.value = product.price * 0.9)
-    watchEffect(() => total = salePrice.value * product.quantity)
 
-    console.log(total)
+    let salePrice = computed(() => {
+        return product.price * 0.9
+    })
 
-    product.quantity = 5
+    let total = computed(() => {
+        return salePrice.value * product.quantity
+    })
 
-    console.log(total)
+    console.log(`Before updated total (should be 9) = ${total.value} salePrice (should be 4.5) = ${salePrice.value}`)
 
+    product.quantity = 3
+
+    console.log(`After updated total (should be 13.5) = ${total.value} salePrice (should be 4.5) = ${salePrice.value}`)
+
+    product.price = 10
+    console.log(`After updated total (should be 27) = ${total.value} salePrice (should be 9) = ${salePrice.value}`)
+
+    product.name = 'Shoes'
+
+    watchEffect(() => {
+        console.log(`Product name is now ${product.name}`)
+    })
+
+    product.name = 'Socks'
 </script>
