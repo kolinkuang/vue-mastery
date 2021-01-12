@@ -1,0 +1,41 @@
+<script src="https://unpkg.com/vue@next"></script>
+
+<script>
+    const {reactive, watchEffect, onRenderTracked, onRenderTriggered} = window['Vue']
+
+    const state = reactive({
+        count: 0
+    })
+
+    watchEffect(() => {
+        console.log(state.count)
+    }, {
+        onTrack(e) {
+            // debugger
+        },
+        onTrigger(e) {
+            // debugger
+        }
+    })
+
+    const App = {
+        renderTracked(e) {
+            // debugger
+        },
+        renderTriggered(e) {
+            // debugger
+        }
+    }
+
+    const App2 = {
+        setUp() {
+            onRenderTracked(() => {
+                // debugger
+            })
+            onRenderTriggered(() => {
+                // debugger
+            })
+        }
+    }
+
+</script>
