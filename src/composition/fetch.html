@@ -1,23 +1,19 @@
 <script src="https://unpkg.com/vue@next"></script>
 
-<div id="app">
-    <div v-if="isPending">Loading...</div>
-    <div v-else-if="data">{{ data }}</div>
-    <div v-else-if="error">Something went wrong: {{ error }}</div>
-</div>
+<div id="app"></div>
 
 <script>
-    const {createApp, ref} = window['Vue']
+    const {createApp, ref, watchEffect } = window['Vue']
 
-    function useFetch(url) {
+    function useFetch(getUrl) {
         const data = ref(null)
         const error = ref(null)
         const isPending = ref(true)
 
-        fetch(url)
+        fetch(getUrl())
             .then(res => res.json())
             .then(_data => {
-                data.value = _value
+                data.value = _data
                 isPending.value = false
             })
             .catch(err => {
@@ -33,9 +29,13 @@
     }
 
     const App = {
-        setUp(props) {
-            const {data, error, isPending} = useFetch('https://jsonplaceholder.typicode.com/todos/1')
-
+        template: `
+          <div v-if="isPending">loading...</div>
+          <div v-else-if="data">{{ data }}</div>
+          <div v-else-if="error">Something went wrong: {{ error.message }}</div>
+        `,
+        setup() {
+            const {data, error, isPending} = useFetch(() => 'https://jsonplaceholder.typicode.com/todos/1')
             return {
                 data,
                 error,
@@ -45,5 +45,4 @@
     }
 
     createApp(App).mount('#app')
-
 </script>

@@ -4,7 +4,7 @@
 
 <script>
     // Composition API
-    const {createApp, ref, onMounted, onUnmounted} = Vue
+    const {createApp, ref, onMounted, onUnmounted} = window['Vue']
 
     function useMouse() {
         const x = ref(0)
@@ -30,15 +30,11 @@
     }
 
     const App = {
-        // props: {
-        //     x: Number,
-        //     y: Number
-        // },
-        setUp(props) {
+        setup() {
             const {x, y} = useMouse()
             return {
-                x: x,
-                y: y
+                x,
+                y
             }
         },
         template: `{{x}} {{y}}`

@@ -3,9 +3,7 @@
 <div id="app"></div>
 
 <script>
-    // By Evan You
-
-    const {createApp, ref, watchEffect } = Vue
+    const {createApp, ref, watchEffect} = window['Vue']
 
     function usePost(getId) {
         return useFetch(() => `https://jsonplaceholder.typicode.com/todos/${getId()}`)
@@ -16,21 +14,27 @@
         const error = ref(null)
         const isPending = ref(true)
 
-        watchEffect(() =>{
+        // register the event to reactive effects
+        watchEffect(() => {
             isPending.value = true
             data.value = null
             error.value = null
+
             fetch(getUrl())
                 .then(res => res.json())
                 .then(_data => {
-                    data.value = _data
-                    isPending.value = false
+                    // foo()
+                    setTimeout(() => {
+                        data.value = _data
+                        isPending.value = false
+                    }, 1000)
                 })
                 .catch(err => {
                     error.value = err
                     isPending.value = false
                 })
         })
+
         return {
             data,
             error,
@@ -39,36 +43,36 @@
     }
 
     const Post = {
-        template: `
-          <div v-if="isPending">loading...</div>
-          <div v-else-if="data">{{data}}</div>
-          <div v-else-if="error">Something went wrong: {{error.message}}</div>
-        `,
-        props: [ 'id' ],
-        setup(props){
-            // first example directly using fetch...
-            //const {data, error, isPending} = useFetch(() => `https://jsonplaceholder.typicode.com/todos/${props.id}`)
-            const {data, error, isPending} = usePost(() => props.id)
+        setup(props) {
+            const {data, error, isPending} = usePost(props.id)
+
             return {
                 data,
                 error,
                 isPending
             }
-        }
+        },
+        template: `
+          <div v-if="isPending">Loading...</div>
+          <div v-else-if="data">{{ data }}</div>
+          <div v-else-if="error">Something went wrong: {{ error.message }}</div>
+        `,
+        props: ['id']
     }
 
     const App = {
-        components: { Post },
+        components: {Post},
         data() {
             return {
                 id: 1
             }
         },
-        template:`
-          <button @click="id++">change ID</button>
-          <Post :id="id" />
+        template: `
+          <button @click="id++">Change ID</button>
+          <Post :id="id"/>
         `
     }
 
-    createApp(App).mount("#app")
+    createApp(App).mount('#app')
+
 </script>
