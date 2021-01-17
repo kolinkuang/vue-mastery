@@ -44,14 +44,6 @@
         container.appendChild(el)
     }
 
-    const vdom = h('div', {class: 'red'}, [
-        h('span', null, 'hello')
-    ])
-
-    const vdom2 = h('div', {class: 'green'}, [
-        h('span', null, 'changed!')
-    ])
-
     function patch(n1, n2) {
         //遍历，比较，赋值
         if (n1.tag === n2.tag) {
@@ -125,6 +117,14 @@
 
         }
     }
+
+    const vdom = h('div', {class: 'red'}, [
+        h('span', null, 'hello')
+    ])
+
+    const vdom2 = h('div', {class: 'green'}, [
+        h('span', null, 'changed!')
+    ])
 
     mount(vdom, document.getElementById('app'))
 
